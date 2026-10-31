@@ -244,36 +244,15 @@
             return messages[error.code] || error.message || 'Something went wrong. Please try again.';
         }
 
-        function classifyBP(sys, dia, age = null) {
+function classifyBP(sys, dia, age = null) {
             let category = '';
             let color = '';
             let bgLight = '';
             let advice = '';
             let isUrgent = false;
 
-            if (sys >= 180 || dia >= 120) {
-                category = 'Hypertensive Crisis (EMERGENCY)';
-                color = 'text-red-700';
-                bgLight = 'bg-red-50 border-red-300';
-                advice = 'CRITICAL ALERT: Your blood pressure is extremely high. Wait 5 minutes and test again. If you have headache, chest pain, shortness of breath, confusion, or numbness, SEEK IMMEDIATE EMERGENCY MEDICAL ATTENTION.';
-                isUrgent = true;
-            } else if (sys >= 140 || dia >= 90) {
-                category = 'High Blood Pressure (Stage 2)';
-                color = 'text-red-600';
-                bgLight = 'bg-red-50 border-red-200';
-                advice = 'Your blood pressure is high. Consult your doctor or community health worker soon. Avoid heavy physical exertion, reduce salt intake, and take prescribed medications if any.';
-            } else if ((sys >= 130 && sys <= 139) || (dia >= 80 && dia <= 89)) {
-                category = 'High Blood Pressure (Stage 1)';
-                color = 'text-amber-600';
-                bgLight = 'bg-amber-50 border-amber-200';
-                advice = 'Your blood pressure is slightly high (Stage 1). Monitor your readings daily for the next week, practice relaxation, eat a balanced diet, and discuss this with your physician.';
-            } else if ((sys >= 120 && sys <= 129) && dia < 80) {
-                category = 'Elevated BP';
-                color = 'text-yellow-600';
-                bgLight = 'bg-yellow-50 border-yellow-200';
-                advice = 'Your blood pressure is elevated. This is a warning sign that you may develop high blood pressure if steps are not taken. Focus on regular exercise, healthy eating, and stress reduction.';
             // Severe Low BP / Emergency Hypotension
-            } else if (sys < 80 || dia < 50) {
+            if (sys < 80 || dia < 50) {
                 category = 'Severe Low BP (Hypotension)';
                 color = 'text-purple-600';
                 bgLight = 'bg-purple-50 border-purple-200';
@@ -285,12 +264,37 @@
                 color = 'text-sky-600';
                 bgLight = 'bg-sky-50 border-sky-200';
                 advice = 'Your reading indicates low blood pressure (below 90/60 mmHg). Drink plenty of water, move slowly when standing up, and consult your healthcare provider if you feel dizzy or lightheaded.';
-            // Normal BP (90-119 / 60-79 mmHg)
-            } else if ((sys >= 90 && sys < 120) && (dia >= 60 && dia < 80)) {
+            // Hypertensive Crisis
+            } else if (sys >= 180 || dia >= 120) {
+                category = 'Hypertensive Crisis (EMERGENCY)';
+                color = 'text-red-700';
+                bgLight = 'bg-red-50 border-red-300';
+                advice = 'CRITICAL ALERT: Your blood pressure is extremely high. Wait 5 minutes and test again. If you have headache, chest pain, shortness of breath, confusion, or numbness, SEEK IMMEDIATE EMERGENCY MEDICAL ATTENTION.';
+                isUrgent = true;
+            // High Blood Pressure (Stage 2)
+            } else if (sys >= 140 || dia >= 90) {
+                category = 'High Blood Pressure (Stage 2)';
+                color = 'text-red-600';
+                bgLight = 'bg-red-50 border-red-200';
+                advice = 'Your blood pressure is high. Consult your doctor or community health worker soon. Avoid heavy physical exertion, reduce salt intake, and take prescribed medications if any.';
+            // High Blood Pressure (Stage 1)
+            } else if (sys >= 130 || dia > 80) {
+                category = 'High Blood Pressure (Stage 1)';
+                color = 'text-amber-600';
+                bgLight = 'bg-amber-50 border-amber-200';
+                advice = 'Your blood pressure is slightly high (Stage 1). Monitor your readings daily for the next week, practice relaxation, eat a balanced diet, and discuss this with your physician.';
+            // Elevated BP (121-129 / <= 80)
+            } else if (sys >= 121 && sys <= 129 && dia <= 80) {
+                category = 'Elevated BP';
+                color = 'text-yellow-600';
+                bgLight = 'bg-yellow-50 border-yellow-200';
+                advice = 'Your blood pressure is elevated. This is a warning sign that you may develop high blood pressure if steps are not taken. Focus on regular exercise, healthy eating, and stress reduction.';
+            // Normal BP (90-120 / 60-80 mmHg)
+            } else if (sys >= 90 && sys <= 120 && dia >= 60 && dia <= 80) {
                 category = 'Normal BP';
                 color = 'text-emerald-600';
                 bgLight = 'bg-emerald-50 border-emerald-200';
-                advice = 'Great news! Your blood pressure is within the normal healthy range (90-119 / 60-79 mmHg). Continue your healthy habits and check again next month.';
+                advice = 'Great news! Your blood pressure is within the normal healthy range (90-120 / 60-80 mmHg). Continue your healthy habits and check again next month.';
             } else {
                 category = 'Unclassified / Consult Provider';
                 color = 'text-slate-600';
@@ -859,7 +863,7 @@
                         </div>
                         <div class="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 space-y-2">
                             <span class="text-sm font-bold text-slate-500 uppercase tracking-wider">Current Category</span>
-                            <div class="text-xl font-extrabold truncate ${latest ? classifyBP(latest.systolic, latest.diastolic, session.age).color : 'text-slate-400'}">${latest ? latest.category : 'No records'}</div>
+                            <div class="text-base font-extrabold leading-snug ${latest ? classifyBP(latest.systolic, latest.diastolic, session.age).color : 'text-slate-400'}">${latest ? latest.category : 'No records'}</div>
                             <p class="text-xs text-slate-500">Classification</p>
                         </div>
                         <div class="bg-white p-6 rounded-3xl shadow-lg border border-slate-100 space-y-2">
