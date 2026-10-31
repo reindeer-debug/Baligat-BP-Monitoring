@@ -272,11 +272,25 @@
                 color = 'text-yellow-600';
                 bgLight = 'bg-yellow-50 border-yellow-200';
                 advice = 'Your blood pressure is elevated. This is a warning sign that you may develop high blood pressure if steps are not taken. Focus on regular exercise, healthy eating, and stress reduction.';
-            } else if (sys < 120 && dia < 80) {
+            // Severe Low BP / Emergency Hypotension
+            } else if (sys < 80 || dia < 50) {
+                category = 'Severe Low BP (Hypotension)';
+                color = 'text-purple-600';
+                bgLight = 'bg-purple-50 border-purple-200';
+                advice = 'CRITICAL ALERT: Your blood pressure is extremely low. Sit or lie down immediately and drink fluids. If you feel dizzy, confused, or faint, seek emergency medical attention right away.';
+                isUrgent = true;
+            // Low BP (Hypotension)
+            } else if (sys < 90 || dia < 60) {
+                category = 'Low BP (Hypotension)';
+                color = 'text-sky-600';
+                bgLight = 'bg-sky-50 border-sky-200';
+                advice = 'Your reading indicates low blood pressure (below 90/60 mmHg). Drink plenty of water, move slowly when standing up, and consult your healthcare provider if you feel dizzy or lightheaded.';
+            // Normal BP (90-119 / 60-79 mmHg)
+            } else if ((sys >= 90 && sys < 120) && (dia >= 60 && dia < 80)) {
                 category = 'Normal BP';
                 color = 'text-emerald-600';
                 bgLight = 'bg-emerald-50 border-emerald-200';
-                advice = 'Great news! Your blood pressure is within the normal healthy range. Continue your healthy habits and check again next month.';
+                advice = 'Great news! Your blood pressure is within the normal healthy range (90-119 / 60-79 mmHg). Continue your healthy habits and check again next month.';
             } else {
                 category = 'Unclassified / Consult Provider';
                 color = 'text-slate-600';
