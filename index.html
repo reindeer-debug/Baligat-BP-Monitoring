@@ -768,35 +768,59 @@
         }
 
         async function handleRegister(e) {
-            e.preventDefault();
-            const name = document.getElementById('reg-name').value.trim();
-            const age = parseInt(document.getElementById('reg-age').value);
-            const email = document.getElementById('reg-email').value.trim();
-            const password = document.getElementById('reg-pin').value;
+    e.preventDefault();
 
-            if (password.length < 8) {
-                showToast('Password must be at least 8 characters long.', 'error');
-                return;
-            }
+    // 1. GET THE SUBMIT BUTTON & PREVENT MULTIPLE CLICKS
+    const submitBtn = e.submitter || e.target.querySelector('button[type="submit"]');
+    if (submitBtn && submitBtn.disabled) return;
 
-            try {
-                const credential = await auth.createUserWithEmailAndPassword(email, password);
-                const profile = {
-                    name,
-                    age,
-                    email,
-                    role: 'patient',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-                await db.collection('users').doc(credential.user.uid).set(profile);
-                const savedProfile = { id: credential.user.uid, ...profile };
-                Database.startListeners(savedProfile);
-                showToast('Account created successfully!', 'success');
-                router.navigate('patient-dashboard');
-            } catch (error) {
-                showToast(firebaseErrorMessage(error), 'error');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.dataset.originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = `Creating Account...`;
+    }
+
+    try {
+        const name = document.getElementById('reg-name').value.trim();
+        const age = parseInt(document.getElementById('reg-age').value);
+        const email = document.getElementById('reg-email').value.trim();
+        const password = document.getElementById('reg-pin').value;
+
+        if (password.length < 8) {
+            showToast('Password must be at least 8 characters long.', 'error');
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = submitBtn.dataset.originalText;
             }
+            return;
         }
+
+        const credential = await auth.createUserWithEmailAndPassword(email, password);
+        const profile = {
+            name,
+            age,
+            email,
+            role: 'patient',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        await db.collection('users').doc(credential.user.uid).set(profile);
+        const savedProfile = { id: credential.user.uid, ...profile };
+        Database.startListeners(savedProfile);
+        
+        showToast('Account created successfully!', 'success');
+        router.navigate('patient-dashboard');
+
+    } catch (error) {
+        showToast(firebaseErrorMessage(error), 'error');
+        
+        // Re-enable the button if registration fails so the user can try again
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = submitBtn.dataset.originalText;
+        }
+    }
+}
 
         function renderPatientDashboard() {
             const session = Database.getSession();
